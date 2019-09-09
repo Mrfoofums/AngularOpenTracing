@@ -9,7 +9,7 @@ export class TracerService {
 
   constructor() {
     // Put your Access/Project Token in your env config for prod
-    this.initGlobalTracer('RnzDxIY+VyZTGAxOFWq198j7EW9kqT4bP3j0Shd1sR9Fy1x4xf0mJSM53OFO3+bC2RhgiaPqtMzcUNhStx5BJ4y6bXxLc1QhVte79+BU', 'angular');
+    this.initGlobalTracer('84614595d97865a0dc71229ff7f50d1e', 'FullStackAngular');
    }
 
    // Due to the xhr_instrumentation flag being true, all http calls will be traced

@@ -104,4 +104,6 @@ export class HomeComponent implements OnInit {
 }
 ```
 
-If you want to take this further, you can try adding tracing as an HttpClient interceptor to add domain specific tags to your front end application.
+
+# Using The Interceptor
+// Add in a bunch of stuff

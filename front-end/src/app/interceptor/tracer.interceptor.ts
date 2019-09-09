@@ -5,22 +5,17 @@ import {
 
 import { Observable } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
-import { TracerService } from '../tracer.service';
 import * as opentracing from 'opentracing';
 
 /** Pass untouched request through to the next request handler. */
 @Injectable()
 export class TracerInterceptor implements HttpInterceptor {
-    // operationName: string;
-
-
-    constructor() {
-        // this.operationName = 'NAME_NOT_SET';
-    }
 
   intercept(req: HttpRequest<any>, next: HttpHandler):
     Observable<HttpEvent<any>> {
-    const span = opentracing.globalTracer().startSpan(this.getName(req));
+    const carrier = {};
+    const span = opentracing.globalTracer().startSpan(this.getName(req) + '_test2');
+    opentracing.globalTracer().inject(span.context(), opentracing.FORMAT_HTTP_HEADERS, carrier);
     console.log('intercepting stuff');
 
     return next.handle(req)
@@ -31,7 +26,7 @@ export class TracerInterceptor implements HttpInterceptor {
                     span.log(event.body);
                 }
             },
-            (error: HttpErrorResponse) => {
+            (event: HttpErrorResponse) => {
                 if (event instanceof HttpErrorResponse) {
                     span.setTag('error', true);
                     span.log(event);

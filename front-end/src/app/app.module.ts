@@ -17,7 +17,7 @@ import { TracerInterceptor } from './interceptor/tracer.interceptor';
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: TracerInterceptor, multi: true },],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: TracerInterceptor, multi: true }, ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
