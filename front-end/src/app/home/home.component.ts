@@ -15,19 +15,19 @@ export class HomeComponent implements OnInit {
   url = 'http://localhost:8080';
   constructor(private http: HttpClient) {
 
-    const span = opentracing.globalTracer().startSpan('Get:80');
+    // const span = opentracing.globalTracer().startSpan('Get:80');
     this.http.get(this.url).subscribe((data) => {
       this.result = data;
-      span.log({response : this.result});
+      // span.log({response : this.result});
     },
 
     error => {
       this.result = error;
-      span.setTag('error', true);
-      span.log({data: this.result});
+      // span.setTag('error', true);
+      // span.log({data: this.result});
     },
     () => {
-      span.finish();
+      // span.finish();
     });
   }
 
