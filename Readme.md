@@ -222,11 +222,11 @@ intercept(req: HttpRequest<any>, next: HttpHandler):
   }
 ```
 
-First, design decisions. My goal here was to make sure that each API/Request shows up as it's own operation within LightStep, but is also configurable to a degree. THat's where getName() plays it's part.
+First, design decisions. My goal here was to make sure that each API/Request shows up as it's own operation within LightStep, but is also configurable to a degree. That's where ```getName()``` plays it's part.
 
-injectContext() is needed because we want our traces in our UI to be properly correlated with the traces in the services downstream. 
+```injectContext()``` is needed because we want our traces in our UI to be properly correlated with the traces in the services downstream. 
 
-The intrecept() method itself is very simple, we check if we got a response and log that on our span, or we check if we received an error and log that on our span. The difference in our error case is that we set a Tag of error to true.
+The ```intrecept()``` method itself is very simple, we check if we got a response and log that on our span, or we check if we received an error and log that on our span. The difference in our error case is that we set a Tag of error to true.
 
 That's it! :)
 
