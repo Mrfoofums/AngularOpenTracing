@@ -1,3 +1,9 @@
+<!--
+  Title: Tracing in Angular
+  Description: A guide to adding open tracing to Angular applications
+  Author: Forrest Anthony Knight Jr - MrFoofums
+  -->
+
 # Tracing in Angular
 Angular is a very opinionated front end framework that utilizes Typescript. It affords a ton of useful tools like a built in HttpClient library, routing, etc. Because it's opinionated, dropping in javascript libraries can provice difficult unless you understand these opinions and their intentions. We're going to add traces in two approaches. The first being more of a drop in, the second being a more directed and opinionated approach. Disclaimer - I work for Lightstep, the best tracing observability company currently in the market, so our globalTracer() will return an instance of the LightStepTracer! Feel free to replace that 1 line of code with the tracer of your choice.
 
