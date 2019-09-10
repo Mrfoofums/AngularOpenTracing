@@ -9,7 +9,7 @@ import { TracerService } from './tracer.service';
 export class AppComponent {
   title = 'front-end';
 
-  constructor(private trace: TracerService) {
+  constructor() {
 
   }
 }

@@ -6,19 +6,28 @@ import {
 import { Observable } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import * as opentracing from 'opentracing';
+import * as lightstepTracer from 'lightstep-tracer';
 
-/** Pass untouched request through to the next request handler. */
 @Injectable()
 export class TracerInterceptor implements HttpInterceptor {
 
+  constructor() {
+    this.initGlobalTracer('84614595d97865a0dc71229ff7f50d1e', 'TraceInterceptor');
+   }
+
+   initGlobalTracer(accessToken: string, componentName: string) {
+    const options: lightstepTracer.TracerOptions = {
+      access_token: accessToken,
+      component_name: componentName
+    };
+    opentracing.initGlobalTracer( new lightstepTracer.Tracer(options));
+   }
+
   intercept(req: HttpRequest<any>, next: HttpHandler):
     Observable<HttpEvent<any>> {
-    const carrier = {};
-    const span = opentracing.globalTracer().startSpan(this.getName(req) + '_test2');
-    opentracing.globalTracer().inject(span.context(), opentracing.FORMAT_HTTP_HEADERS, carrier);
-    console.log('intercepting stuff');
-
-    return next.handle(req)
+    const span = opentracing.globalTracer().startSpan(this.getName(req));
+    const tracedReq = this.injectContext(span, req);
+    return next.handle(tracedReq)
     .pipe(
         tap(
             (event: HttpEvent<any>) => {
@@ -39,9 +48,21 @@ export class TracerInterceptor implements HttpInterceptor {
     );
   }
 
+  injectContext(span: opentracing.Span, req: HttpRequest<any> ): HttpRequest<any> {
+    const carrier = {};
+    opentracing.globalTracer().inject(span.context(), opentracing.FORMAT_TEXT_MAP, carrier);
+    const clone = req.clone({
+      headers: req.headers
+      .set('ot-tracer-sampled', carrier['ot-tracer-sampled'])
+      .set('ot-tracer-spanid', carrier['ot-tracer-spanid'])
+      .set('ot-tracer-traceid', carrier['ot-tracer-traceid'])
+    });
+    return clone;
+  }
+
   getName(req: HttpRequest<any>): string {
-    if (req.headers.has('tracingOperationName')) {
-        return req.headers.get('tracingOperationName');
+    if (req.headers.has('traceOperationName')) {
+        return req.headers.get('traceOperationName');
     } else {
         return req.url;
     }

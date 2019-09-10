@@ -23,5 +23,5 @@ export class TracerService {
     opentracing.initGlobalTracer( new lightstepTracer.Tracer(options));
    }
 
-  
+
 }
