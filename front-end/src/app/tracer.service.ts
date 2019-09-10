@@ -17,7 +17,7 @@ export class TracerService {
     const options: lightstepTracer.TracerOptions = {
       access_token: accessToken,
       component_name: componentName,
-      // xhr_instrumentation: true
+      xhr_instrumentation: true
     };
 
     opentracing.initGlobalTracer( new lightstepTracer.Tracer(options));
