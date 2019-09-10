@@ -12,7 +12,7 @@ import * as lightstepTracer from 'lightstep-tracer';
 export class TracerInterceptor implements HttpInterceptor {
 
   constructor() {
-    this.initGlobalTracer('84614595d97865a0dc71229ff7f50d1e', 'TraceInterceptor');
+    this.initGlobalTracer('YOUR_ACCESS_TOKEN', 'TraceInterceptor');
    }
 
    initGlobalTracer(accessToken: string, componentName: string) {

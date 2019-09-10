@@ -1,9 +1,13 @@
-# Tracing in Angular - Forrest Knight
-Sending data to LightStep in an Angular app only takes a few lines of code and by essentially following the [cookbook](https://github.com/lightstep/lightstep-tracer-javascript). We are going to utilize the ```xhr_instrumentation:true``` flag to trace all XHR calls and get free contex propogation. Woo!
+# Tracing in Angular
+Angular is a very opinionated front end framework that utilizes Typescript. It affords a ton of useful tools like a built in HttpClient library, routing, etc. Because it's opinionated, dropping in javascript libraries can provice difficult unless you understand these opinions and their intentions. We're going to add traces in two approaches. The first being more of a drop in, the second being a more directed and opinionated approach. Disclaimer - I work for Lightstep, the best tracing observability company currently in the market, so our globalTracer() will return an instance of the LightStepTracer! Feel free to replace that 1 line of code with the tracer of your choice.
 
-### Notes
-testapp-1 and testapp-2 are spring boot apps that you can use to test full stack traces. CD into those directories and do ```gradle bootRun```. Test app 1, and then 2, in that order. Make sure to update your AccessToken/ProjectToken
+## The first Approach
+Our first approach is going to be just following the lightstep javascript [cookbook](https://github.com/lightstep/lightstep-tracer-javascript) so that we get a quick win that traces all XHR/Http calls. We are going to utilize the ```xhr_instrumentation:true``` flag to trace all XHR calls and get free contex propogation into our downstream services Woo!
 
+### Before we start
+testapp-1 and testapp-2 are spring boot apps that you can use to test full stack traces. CD into those directories and do ```gradle bootRun```. Test app 1, and then 2, in that order. Make sure to update your AccessToken/ProjectToken found in TracingConfig.java. As these are LightStep focused example apps, I'd recommend signing up for our free tier to quickly visualize traces without anymore local setup required. When you run ```ng serve``` on the front end - it will automatically hit localhost:8080 on page load, creating traces and sending them to LightStep.
+
+### Here we go
 1) First add opentracing and the lightstep tracer to your project ```npm install --save lightstep-tracer opentracing```
 2) Create a new service called Traver service that looks like below - ```ng g service tracer```
 
@@ -105,12 +109,12 @@ export class HomeComponent implements OnInit {
 ```
 
 
-# Creating an Interceptor
-Tracing each and every API call can be a pain. While you might handle certain request differently than others, it is very likely that you have a general pattern for dealing with the data. 
+## The second ApproachCreating an Interceptor
+Tracing each and every API call can be a pain. While you might handle certain request differently than others, it is very likely that you desire a more framework level approach to tracing your Http Calls.
 
 Implementing tracing as an ```HttpInterceptor``` is a far better method within Angular to handle API request, and we can do it all within a single file.
 
-## Set Up
+### Set Up
 We are going to reuse our ```initGlobalTracer()``` and constructor from earlier, but let's make a new class called ```TracerInterceptor``` that implements ```HttpInterceptor```. You can put this anywhere, I put mine inside of an interceptors/ folder. Your class will have errors as you haven't implemented the interface yet, that's okay.
 
 ```Typescript
@@ -128,7 +132,7 @@ import * as lightstepTracer from 'lightstep-tracer';
 export class TracerInterceptor implements HttpInterceptor {
 
   constructor() {
-    this.initGlobalTracer('84614595d97865a0dc71229ff7f50d1e', 'TraceInterceptor');
+    this.initGlobalTracer('YOUR_ACCESS_TOKEN', 'TraceInterceptor');
    }
 
    initGlobalTracer(accessToken: string, componentName: string) {
@@ -140,7 +144,7 @@ export class TracerInterceptor implements HttpInterceptor {
    }
 }
 ```
-Because this is an Interceptor, we will need to provide it to our application. This is a very standardly configured example app so we will provide our interceptor in our ```AppModule```. Feel free to put your wherever, but don't get stuck at this part, we're just setting up.
+Because this is an Interceptor, we will need to provide it to our application. This is a very standardly configured example app so we will provide our interceptor in our ```AppModule```. Feel free to put yours wherever, but don't get stuck at this part, we're just setting up.
 
 ```Typescript
 import { BrowserModule } from '@angular/platform-browser';
@@ -168,11 +172,7 @@ import { TracerInterceptor } from './interceptor/tracer.interceptor';
 export class AppModule { }
 ```
 
-Cool, so now we need to implement 
-```Typescript
-intercept(req: HttpRequest<any>, next: HttpHandler):
-    Observable<HttpEvent<any>> {}
-```
+Cool, so now we need to implement```intercept()``` and it's helpers
 Feel free to copy and paste the following three functions and then I'll talk about what I'm doing here
 
 ```Typescript
@@ -230,8 +230,14 @@ The ```intrecept()``` method itself is very simple, we check if we got a respons
 
 That's it! :)
 
+
 # Extending Our Interceptor
-Obivously this is just a code snippet and not a plugin, so you cna change this in any way that makes sense for you. With tracing, how you identify operations and tagging schemes is ultimately up to you. In my next version, I will add configuration to allow sets of tags for success and error states.
+Obivously this is just a code snippet and not a plugin, so you can modify this in any way that makes sense for you. With tracing, how you identify operations and tagging schemes is ultimately up to you. In my next version, I will add configuration to allow sets of tags for success and error states.
+
+Some things to consider:
+1. Being able to batch API calls into a single operation
+2. Error handling in the interceptor will preempt all other error handling, so be sure to add additional interceptors/request handlers as necessary. 
+3. 
 
 
 

@@ -17,7 +17,7 @@ public class TracingConfig {
         return new com.lightstep.tracer.jre.JRETracer(
                 new com.lightstep.tracer.shared.Options.OptionsBuilder()
                         .withComponentName("forrest-spring-2-test")
-                        .withAccessToken("84614595d97865a0dc71229ff7f50d1e")
+                        .withAccessToken("YOUR_ACCESS_TOKEN")
 //                        .withAccessToken("developer")
                         .withVerbosity(4)
 //                        .withCollectorHost("localhost")
